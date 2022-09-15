@@ -1,3 +1,5 @@
+#include <string>
+
 #include "png_reader.h"
 #include "makeSurface.h"
 
@@ -5,12 +7,15 @@
 
 #include "compress_util.h"
 
+#ifndef TEST3
+#define RANDOM_TEST
+#endif
+
 int main(int argc, char* argv[])
 {
   auto urand=[]() {
     return double(rand())/double(RAND_MAX);
   };
-  #define RANDOM_TEST
   //create testing scene with geometry predicates
   Scene scene;
   #ifdef TEST3
@@ -50,8 +55,10 @@ int main(int argc, char* argv[])
   }
   #endif
 
+  std::cout << "scene:\n" << scene << '\n';
+
   //voxelate geometry
-  int sz = 16;
+  int sz = argc > 1 ? atoi(argv[1]) : 16;
   std::vector<int> box(sz * sz * sz, -1);
   
   for(int k=0;k<sz;k++) {
@@ -62,35 +69,11 @@ int main(int argc, char* argv[])
   }
   std::cout << "created voxelated geometry\n";
 
-  compress_write(box.data(), sz, sz, sz, "geometry.cdat");
+  std::string filename = "geometry.cdat";
+  if(argc>2)
+    filename = std::string(argv[2]);
+
+  compress_write(box.data(), sz, sz, sz, filename.c_str());
   std::cout << "saved geometry\n";
-  
-
-  surfaceMesh sm = makeSurface(box.data(), sz, sz, sz);
-  
-  std::cout << "scene:\n" << scene << '\n';
-
-  std::cout << "saving raw format\n";
-  sm.save("surf.dat");
-
-  std::cout << "saving Blender format\n";
-  sm.saveBlender("surf_Blender.dat");
-
-  //testing (expecting 0 gaps):
-  std::cout << "found " << sm.countGaps() << " gaps\n";
-
-  surfaceMesh sms = makeSurfaceSimple(box.data(), sz, sz, sz);
-  
-  sms.saveBlender("surf_simple.dat");
-
-  std::cout << "Euler's formula check (V + F = E + 2)\n";
-  for (auto& it : sm.bodiesCollection) {
-    int V = 0;
-    int E = 0;
-    int F = 0;
-    sm.Euler(it.second, V, E, F);
-    std::cout << it.first << " V(" << V << ") + F(" << F << ") =(" << V + F << ") " << (V+F == E+2 ? "==" : "=/=") << " (" << E + 2 << ") E(" << E << ") + 2\n";
-  }
-
   return 0;
 }

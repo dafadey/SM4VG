@@ -1,0 +1,8 @@
+#!/bin/bash
+g++ -O3 makeSurface.cpp voxelated_meshing.cpp 'test_v1(simple_edges).cpp' -lpng -o test1 &
+g++ -O3 makeSurface.cpp voxelated_meshing.cpp 'test_v2(merged_edges).cpp' -lpng -o test2 &
+g++ -O3 makeSurface.cpp voxelated_meshing.cpp 'test_v1(simple_edges).cpp' -lpng -o test3 &
+g++ -O3 makeSurface.cpp voxelated_meshing.cpp test3d_16x16x16.cpp -lpng -o test3d_16x16x16 &
+g++ -O3 makeSurface.cpp voxelated_meshing.cpp test3d_prepare.cpp -lpng -o test3d_prepare &
+g++ -O3 makeSurface.cpp voxelated_meshing.cpp test3d.cpp -lpng -o test3d &
+wait
