@@ -1,23 +1,24 @@
 # SM4VG
-SM4VG stands for Surface Mesher for Voxelated Geomerty
-this software is intended to create *minimalist surface meshes from voxelated geometries
+SM4VG stands for Surface Mesher for Voxelated Geomerty<br>
+this software is intended to create *minimalist surface meshes from voxelated geometries<br>
 *in this context it means that flat Manhattan faces should have minimal number of nodes and be non further mergiable
 
-Build and run prerequisites:
+**Build and run prerequisites:**
 
-Windows:
+Windows:<br>
 MinGW with libpng-1.6.35 library for reading testing png bitmap patterns (most probably available in Cygwin). Asymptote for plotting debugging data into eps or pdf files. Blender to visualize mesh.
 After installing and setting up MinGW use Linux instructions below.
 
 Linux:
+```
 g++ -O3 makeSurface.cpp voxelated_meshing.cpp 'test_v1(simple_edges).cpp' -lpng -o test1
 g++ -O3 makeSurface.cpp voxelated_meshing.cpp 'test_v2(merged_edges).cpp' -lpng -o test2
 g++ -O3 makeSurface.cpp voxelated_meshing.cpp 'test_v1(simple_edges).cpp' -lpng -o test3
 g++ -O3 makeSurface.cpp voxelated_meshing.cpp test3d_16x16x16.cpp -lpng -o test3d_16x16x16
 g++ -O3 makeSurface.cpp voxelated_meshing.cpp test3d_prepare.cpp -lpng -o test3d_prepare
 g++ -O3 makeSurface.cpp voxelated_meshing.cpp test3d.cpp -lpng -o test3d
-
-Tests:
+```
+**Tests:**
 
 Simplest algorithm is implemented in test_v1(simple_edges).cpp, this source is self-consistent. dov1.cmd builds and runs test. It uses example.png as input testing bitmap. Output are dump.dat which contains bitmap, and nodemap. If some edges are not processed it will appear in final dump.dat. returning from while::get_faces(…) will result in processing just the first face (also comment main::makeHoles() call). See details in documentation_v1(simple_edges).pdf. Another output is holes.dat which contains holes contours. Another output is face.dat which contains faces, they are drawn by corresponding asy script, faces.pdf can be studied in inkscape, there it can be verified that holes are properly processed.
 
@@ -28,14 +29,17 @@ test3d_16x16x16.cpp uses geo.h to build geometry predicates (two spheres and one
 
 test3d_16x16x16.cpp also verifies that mesh has no gaps. It checks only node to edge gaps, faces are not tested but by design there should not be one.
 
-output formats:
+**output formats:**
+
 surf_Blender.dat - contains vertices and plygonal faces without holes acceptable by script in tool/mesh.blend.
+
 surf_simple.dat - same blender oriented output but for raw voxels (only interface faces are drawn).
 the above formats are per body so each body has own vertices and own faces, vertices are not shared between bodies.
 refer to tools/mesh.blend to see how the format is interpreted.
 
 surf.dat - format with shared vertices and shared faces. faces may be with holes.
 format is as follows:
+  ```
   number of verts
   x0 y0 z0
   x1 y1 z1
@@ -58,8 +62,8 @@ format is as follows:
   body id
   number of faces
   f13 f11 f12 -f3 ... // - means for this body face f3 has inverted normal 
-
-test3d and test3d_prepare
+```
+**test3d and test3d_prepare**
 
 test3d_prepare creates testing voxelated geometry written in compressed format (nx,ny,nz,voxel0,count,voxel1,count...voxellast,count). test3d_prepare accepts input nx=ny=nz (i.e. resolution) and output file name. so sample usage is as follows:
 ./test3d_prepare 32 test32.cdat
@@ -68,11 +72,19 @@ test3d reads voxelated geometry written in compressed format and creates surface
 sample usage is:
 ./test3d test32.cdat
 
-FOR THOSE WHO LASILY SCRROLLED UP TO HERE:
-./build
-./test3d_prepare 64 test64.cdat
-#now your sample voxel data is in test64.cdat
-./test3d test64.dat
-#now your shared surface is in surf.dat
-#blender friendly siurface is in surf_Blender.dat
-#tha latter can be visualized with tools/mesh.blend which contains py script to create blendee scene.
+**FOR THOSE WHO LASILY SCRROLLED DOWN HERE:**
+
+**1.**<br>
+./build<br>
+**2.**<br>
+./test3d_prepare 64 test64.cdat<br>
+#now your sample voxel data is in test64.cdat<br>
+**3.**<br>
+./test3d test64.cdat<br>
+#now your shared surface is in surf.dat<br>
+#blender friendly siurface is in surf_Blender.dat<br>
+#the latter can be visualized with tools/mesh.blend which contains py script to create blendee scene.<br>
+**4.** <br>
+blender tools/mesh.blend<br>
+#NOTE: run blender from project home folder to avoid fixing relative path to surf_Blender.dat in mesh.blender py script.<br>
+![This is an image](https://github.com/dafadey/sm4vg/blob/main/doc/using_mesh_blend.png)
